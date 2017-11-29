@@ -3,19 +3,13 @@ package com.example.andrew.jobzo_android_app
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.widget.EditText
+import android.widget.ImageButton
 import com.google.gson.Gson
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
-import org.json.JSONException
-import android.R.string.cancel
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import okhttp3.RequestBody
-import okhttp3.OkHttpClient
-import com.example.andrew.jobzo_android_app.R.id.send
 
 
 
@@ -23,9 +17,9 @@ import com.example.andrew.jobzo_android_app.R.id.send
 
 class MainActivity : AppCompatActivity() {
     val CONTENT_TYPE = MediaType.parse("application/json; charset=utf-8")
-    val client = OkHttpClient()
-    var prefs: SharedPreferences? = null
-    var message: EditText? = null
+    private val client = OkHttpClient()
+    private var prefs: SharedPreferences? = null
+    private var message: EditText? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,14 +32,18 @@ class MainActivity : AppCompatActivity() {
 
         send.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
-               run2("https://radiant-basin-93715.herokuapp.com/chat")
+               sendMessage("https://radiant-basin-93715.herokuapp.com/chat")
             }
         })
-       run("https://radiant-basin-93715.herokuapp.com/welcome")
+       welcomeUser("https://radiant-basin-93715.herokuapp.com/welcome")
     }
 
-
-    fun run(url: String) {
+    /*
+    @params: url of welcome backend
+    - make a user session for the user and send a welcome message
+     */
+    private fun welcomeUser(url: String) {
+        // sending request
         val request = Request.Builder()
                 .url(url)
                 .build()
@@ -56,29 +54,36 @@ class MainActivity : AppCompatActivity() {
                 val responseBody = response.body()?.string()
                 val body = JSONObject(responseBody)
                 println(body.get("uuid"))
+
+                // saving user id in local storage
                 val prefsEditor = prefs!!.edit()
                 val gson = Gson()
                 val json = gson.toJson(body.get("uuid"))
                 prefsEditor.putString("token", json)
                 prefsEditor.commit()
-
-                val json2 = prefs!!.getString("token", "")
-                val obj = gson.fromJson<String>(json2, String::class.java)
-                println(obj)
             }
         })
     }
-    fun run2(url: String){
 
+    /*
+    @params: url of chat backend
+    - makes the user send his message and gets the server response
+     */
+    fun sendMessage(url: String){
+        // getting user session from local storage
         val gson = Gson()
         val json2 = prefs!!.getString("token", "")
         val userSession = gson.fromJson<String>(json2, String::class.java)
+
+        // getting user message
         val messageText = message?.getText().toString()
         println(messageText)
 
+        // building request body
         val body: HashMap<String, String> = hashMapOf("message" to "")
         body.put("message", messageText)
 
+        // sending request
         val request = Request.Builder()
                 .url(url)
                 .addHeader("Authorization",userSession)
@@ -99,31 +104,5 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-
-//        val body = HashMap()
-//        body.put("email", email)
-//        val client = OkHttpClient()
-//        val request = Request.Builder()
-//                .url("http://ieeeguc.org/api/forgotPassword")
-//                .post(RequestBody.create(CONTENT_TYPE, JSONObject(body).toString()))
-//                .build()
-//        client.newCall(request).enqueue(object : Callback() {
-//            fun onFailure(call: Call, e: IOException) {
-//                HTTP_RESPONSE.onFailure(-1, null)
-//                call.cancel()
-//            }
-//
-//            @Throws(IOException::class)
-//            fun onResponse(call: Call, response: Response) {
-//                try {
-//                    val body = response.body().string()
-//                    HTTP_RESPONSE.onSuccess(200, JSONObject(body))
-//                } catch (e: JSONException) {
-//                    HTTP_RESPONSE.onFailure(500, null)
-//                }
-//
-//                response.close()
-//            }
-//        })
     }
 }
