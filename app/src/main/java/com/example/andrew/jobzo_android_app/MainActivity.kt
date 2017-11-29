@@ -3,7 +3,6 @@ package com.example.andrew.jobzo_android_app
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
@@ -28,11 +27,8 @@ class MainActivity : AppCompatActivity() {
         userMessage = findViewById<EditText>(R.id.TextMessage)
         serverMsg = findViewById<TextView>(R.id.serverMessage) as TextView
 
-        send.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(view: View) {
-               sendMessage("https://radiant-basin-93715.herokuapp.com/chat")
-            }
-        })
+        send.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat") }
+
        welcomeUser("https://radiant-basin-93715.herokuapp.com/welcome")
     }
 
@@ -73,14 +69,14 @@ class MainActivity : AppCompatActivity() {
     @params: url of chat backend
     - makes the user send his message and gets the server response
      */
-    fun sendMessage(url: String){
+    private fun sendMessage(url: String){
         // getting user session from local storage
         val gson = Gson()
         val json2 = prefs!!.getString("token", "")
         val userSession = gson.fromJson<String>(json2, String::class.java)
 
         // getting user message
-        val messageText = userMessage?.getText().toString()
+        val messageText = userMessage?.text.toString()
         println(messageText)
 
         // building request body
