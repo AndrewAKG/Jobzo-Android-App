@@ -6,20 +6,18 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import com.google.gson.Gson
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
 
-
-
-
-
 class MainActivity : AppCompatActivity() {
-    val CONTENT_TYPE = MediaType.parse("application/json; charset=utf-8")
+    private val CONTENT_TYPE = MediaType.parse("application/json; charset=utf-8")
     private val client = OkHttpClient()
     private var prefs: SharedPreferences? = null
-    private var message: EditText? = null
+    private var userMessage: EditText? = null
+    private var serverMsg: TextView? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,8 +25,8 @@ class MainActivity : AppCompatActivity() {
         prefs = this.getSharedPreferences("tokens", MODE_PRIVATE)
         setContentView(R.layout.activity_main)
         val send= findViewById<ImageButton>(R.id.send)
-        message = findViewById<EditText>(R.id.TextMessage)
-       // val message= findViewById<EditText>(R.id.TextMessage)
+        userMessage = findViewById<EditText>(R.id.TextMessage)
+        serverMsg = findViewById<TextView>(R.id.serverMessage) as TextView
 
         send.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
@@ -49,10 +47,16 @@ class MainActivity : AppCompatActivity() {
                 .build()
 
         client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+            override fun onFailure(call: Call, e: IOException) {
+                println("Failed")
+            }
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body()?.string()
                 val body = JSONObject(responseBody)
+                val respMessage = body.getString("message")
+                runOnUiThread {
+                    serverMsg?.text = respMessage
+                }
                 println(body.get("uuid"))
 
                 // saving user id in local storage
@@ -76,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         val userSession = gson.fromJson<String>(json2, String::class.java)
 
         // getting user message
-        val messageText = message?.getText().toString()
+        val messageText = userMessage?.getText().toString()
         println(messageText)
 
         // building request body
@@ -91,18 +95,22 @@ class MainActivity : AppCompatActivity() {
                 .build()
 
         client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+            override fun onFailure(call: Call, e: IOException) {
+                println("Failed")
+            }
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body()?.string()
-
                 val body = JSONObject(responseBody)
                if(body.has("message")){
-                    println(body.getString("message"))
-                }else{
+                   println(body.getString("message"))
+                   val respMessage = body.getString("message")
+                   runOnUiThread {
+                       serverMsg?.text = respMessage
+                   }
+               }else{
                    println(body)
                }
             }
-
         })
     }
 }
