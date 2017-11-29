@@ -11,6 +11,7 @@ import org.json.JSONException
 import android.R.string.cancel
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import okhttp3.RequestBody
 import okhttp3.OkHttpClient
@@ -24,12 +25,16 @@ class MainActivity : AppCompatActivity() {
     val CONTENT_TYPE = MediaType.parse("application/json; charset=utf-8")
     val client = OkHttpClient()
     var prefs: SharedPreferences? = null
+    var message: EditText? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = this.getSharedPreferences("tokens", MODE_PRIVATE)
         setContentView(R.layout.activity_main)
         val send= findViewById<ImageButton>(R.id.send)
+        message = findViewById<EditText>(R.id.TextMessage)
+       // val message= findViewById<EditText>(R.id.TextMessage)
 
         send.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
@@ -68,9 +73,11 @@ class MainActivity : AppCompatActivity() {
         val gson = Gson()
         val json2 = prefs!!.getString("token", "")
         val userSession = gson.fromJson<String>(json2, String::class.java)
+        val messageText = message?.getText().toString()
+        println(messageText)
 
         val body: HashMap<String, String> = hashMapOf("message" to "")
-        body.put("message", "hiii")
+        body.put("message", messageText)
 
         val request = Request.Builder()
                 .url(url)
@@ -84,9 +91,13 @@ class MainActivity : AppCompatActivity() {
                 val responseBody = response.body()?.string()
 
                 val body = JSONObject(responseBody)
-                println(body.get("message"))
-
+               if(body.has("message")){
+                    println(body.getString("message"))
+                }else{
+                   println(body)
+               }
             }
+
         })
 
 //        val body = HashMap()
