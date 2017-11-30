@@ -20,23 +20,16 @@ class MainActivity : AppCompatActivity() {
     private val client = OkHttpClient()
     private var prefs: SharedPreferences? = null
     private var userInput: MessageInput? = null
-    private var now: Date? = null
     private var messageText: String? = null
     private val adapter = MessagesListAdapter<Message>("1", null)
-    private val user = Author()
-    private val userMsg = Message()
-    private val server = Author()
-    private val serverMsg = Message()
+    private val user = Author("1")
+    private val server = Author("2")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = this.getSharedPreferences("tokens", MODE_PRIVATE)
         setContentView(R.layout.activity_main)
         userInput = findViewById(R.id.input) as MessageInput
-        user.id = "1"
-        userMsg.author = user
-        server.id = "2"
-        serverMsg.author = server
         messagesList.setAdapter(adapter)
 
         val coursesMsg= findViewById(R.id.courses)
@@ -73,9 +66,6 @@ class MainActivity : AppCompatActivity() {
                 val responseBody = response.body()?.string()
                 val body = JSONObject(responseBody)
                 val respMessage = body.getString("message")
-                now = Date()
-                serverMsg.text = respMessage
-                serverMsg.createdAt = now
 
                 // saving user id in local storage
                 val prefsEditor = prefs!!.edit()
@@ -85,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                 prefsEditor.commit()
 
                 runOnUiThread {
-                    adapter.addToStart(serverMsg, true);
+                    adapter.addToStart(Message(respMessage, "1", server), true);
                 }
             } catch (e: JSONException){
                 println("JSON ERROR")
@@ -103,28 +93,24 @@ class MainActivity : AppCompatActivity() {
         val json2 = prefs!!.getString("token", "")
         val userSession = gson.fromJson<String>(json2, String::class.java)
 
-        now = Date()
-        userMsg.createdAt = now
         when(type){
             0 -> {
                 messageText = userInput!!.inputEditText.text.toString()
-                userMsg.text = messageText
+                adapter.addToStart(Message(messageText!!, "1", user), true);
             }
             1 -> {
                 messageText = "jobs"
-                userMsg.text = "jobs"
+                adapter.addToStart(Message("jobs", "1", user), true);
             }
             2 -> {
                 messageText = "courses"
-                userMsg.text = "courses"
+                adapter.addToStart(Message("courses", "1", user), true);
             }
             3 -> {
                 messageText = "degrees"
-                userMsg.text = "degrees"
+                adapter.addToStart(Message("degrees", "1", user), true);
             }
         }
-        // getting user message
-        adapter.addToStart(userMsg, true);
 
         // building request body
         val body: HashMap<String, String> = hashMapOf("message" to "")
@@ -147,11 +133,8 @@ class MainActivity : AppCompatActivity() {
                     if (body.has("message")) {
                         println(body.getString("message"))
                         val respMessage = body.getString("message")
-                        now = Date()
-                        serverMsg.text = respMessage
-                        serverMsg.createdAt = now
                         runOnUiThread {
-                            adapter.addToStart(serverMsg, true);
+                            adapter.addToStart(Message(respMessage, "1", server), true);
                         }
                     } else {
                         println(body)
