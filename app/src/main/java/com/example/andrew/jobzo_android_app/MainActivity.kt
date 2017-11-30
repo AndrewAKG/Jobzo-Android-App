@@ -10,6 +10,7 @@ import com.stfalcon.chatkit.messages.MessageInput
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.util.*
@@ -19,12 +20,12 @@ class MainActivity : AppCompatActivity() {
     private val client = OkHttpClient()
     private var prefs: SharedPreferences? = null
     private var userInput: MessageInput? = null
+    private var now: Date? = null
     private val adapter = MessagesListAdapter<Message>("1", null)
     private val user = Author()
     private val userMsg = Message()
     private val server = Author()
     private val serverMsg = Message()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,11 +59,11 @@ class MainActivity : AppCompatActivity() {
             override fun onFailure(call: Call, e: IOException) {
                 println("Failed")
             }
-            override fun onResponse(call: Call, response: Response) {
+            override fun onResponse(call: Call, response: Response) = try {
                 val responseBody = response.body()?.string()
                 val body = JSONObject(responseBody)
                 val respMessage = body.getString("message")
-                val now = Date()
+                now = Date()
                 serverMsg.text = respMessage
                 serverMsg.createdAt = now
 
@@ -76,6 +77,8 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     adapter.addToStart(serverMsg, true);
                 }
+            } catch (e: JSONException){
+                println("JSON ERROR")
             }
         })
     }
@@ -92,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
         // getting user message
         val messageText = userInput!!.inputEditText.text.toString()
-        val now = Date()
+        now = Date()
         userMsg.text = messageText
         userMsg.createdAt = now
         adapter.addToStart(userMsg, true);
@@ -113,22 +116,24 @@ class MainActivity : AppCompatActivity() {
             override fun onFailure(call: Call, e: IOException) {
                 println("Failed")
             }
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body()?.string()
-                val body = JSONObject(responseBody)
-               if(body.has("message")){
-                   println(body.getString("message"))
-                   val respMessage = body.getString("message")
-                   val now = Date()
-                   serverMsg.text = respMessage
-                   serverMsg.createdAt = now
-                   runOnUiThread {
-                       adapter.addToStart(serverMsg, true);
-                   }
-               }else{
-                   println(body)
-               }
-            }
+            override fun onResponse(call: Call, response: Response) = try {
+                    val responseBody = response.body()?.string()
+                    val body = JSONObject(responseBody)
+                    if (body.has("message")) {
+                        println(body.getString("message"))
+                        val respMessage = body.getString("message")
+                        now = Date()
+                        serverMsg.text = respMessage
+                        serverMsg.createdAt = now
+                        runOnUiThread {
+                            adapter.addToStart(serverMsg, true);
+                        }
+                    } else {
+                        println(body)
+                    }
+                } catch (e: JSONException){
+                    println("ERROR")
+                }
         })
     }
 }
