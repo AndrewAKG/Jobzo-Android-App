@@ -4,6 +4,9 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.graphics.drawable.ColorDrawable
+
+
 
 class MainActivity : AppCompatActivity() {
     private val SPLASH_TIME_OUT = 4000
@@ -16,6 +19,10 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         },SPLASH_TIME_OUT.toLong())
+        val actionBar = supportActionBar
+        actionBar!!.setHomeButtonEnabled(true)
+        actionBar.hide()
+
         setContentView(R.layout.activity_main)
 
     }
