@@ -3,11 +3,10 @@ package com.example.andrew.jobzo_android_app.models
 import com.stfalcon.chatkit.commons.models.IUser
 
 
-class Author : IUser {
-    internal var id: String? = null
+class Author(private val userId: String) : IUser {
 
     override fun getId(): String? {
-        return id
+        return userId
     }
 
     override fun getName(): String {
