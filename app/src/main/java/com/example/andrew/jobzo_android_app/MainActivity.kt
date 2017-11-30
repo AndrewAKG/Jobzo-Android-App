@@ -30,13 +30,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = this.getSharedPreferences("tokens", MODE_PRIVATE)
+        setTitle("Jobzo")
         setContentView(R.layout.activity_main)
+        prefs = this.getSharedPreferences("tokens", MODE_PRIVATE)
         userInput = findViewById(R.id.input) as MessageInput
         messagesList.setAdapter(adapter)
         val coursesMsg= findViewById(R.id.courses)
         val jobsMsg= findViewById(R.id.jobs)
         val degreesMsg= findViewById(R.id.degrees)
+
         userInput!!.setInputListener(MessageInput.InputListener {
             sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 0)
             true
@@ -45,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         coursesMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2) }
         degreesMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 3) }
 
+        // initializing the chat
         welcomeUser("https://radiant-basin-93715.herokuapp.com/welcome")
     }
 
