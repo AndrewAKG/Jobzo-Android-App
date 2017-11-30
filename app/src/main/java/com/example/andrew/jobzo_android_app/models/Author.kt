@@ -6,8 +6,8 @@ import com.stfalcon.chatkit.commons.models.IUser
 class Author : IUser {
     internal var id: String? = null
 
-    override fun getId(): String {
-        return id.toString()
+    override fun getId(): String? {
+        return id
     }
 
     override fun getName(): String {

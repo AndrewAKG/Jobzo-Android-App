@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private var prefs: SharedPreferences? = null
     private var userInput: MessageInput? = null
     private var now: Date? = null
+    private var messageText: String? = null
     private val adapter = MessagesListAdapter<Message>("1", null)
     private val user = Author()
     private val userMsg = Message()
@@ -38,10 +39,19 @@ class MainActivity : AppCompatActivity() {
         serverMsg.author = server
         messagesList.setAdapter(adapter)
 
+        val coursesMsg= findViewById(R.id.courses)
+        val jobsMsg= findViewById(R.id.jobs)
+        val degreesMsg= findViewById(R.id.degrees)
+
+
         userInput!!.setInputListener(MessageInput.InputListener {
-            sendMessage("https://radiant-basin-93715.herokuapp.com/chat")
+            sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 0)
             true
         })
+        jobsMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 1) }
+        coursesMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2) }
+        degreesMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 3) }
+
         welcomeUser("https://radiant-basin-93715.herokuapp.com/welcome")
     }
 
@@ -87,23 +97,38 @@ class MainActivity : AppCompatActivity() {
     @param: url of chat backend
     - makes the user send his message and gets the server response
      */
-    private fun sendMessage(url: String){
+    private fun sendMessage(url: String, type: Int){
         // getting user session from local storage
         val gson = Gson()
         val json2 = prefs!!.getString("token", "")
         val userSession = gson.fromJson<String>(json2, String::class.java)
 
-        // getting user message
-        val messageText = userInput!!.inputEditText.text.toString()
         now = Date()
-        userMsg.text = messageText
         userMsg.createdAt = now
+        when(type){
+            0 -> {
+                messageText = userInput!!.inputEditText.text.toString()
+                userMsg.text = messageText
+            }
+            1 -> {
+                messageText = "jobs"
+                userMsg.text = "jobs"
+            }
+            2 -> {
+                messageText = "courses"
+                userMsg.text = "courses"
+            }
+            3 -> {
+                messageText = "degrees"
+                userMsg.text = "degrees"
+            }
+        }
+        // getting user message
         adapter.addToStart(userMsg, true);
-
 
         // building request body
         val body: HashMap<String, String> = hashMapOf("message" to "")
-        body.put("message", messageText)
+        body.put("message", messageText.toString())
 
         // sending request
         val request = Request.Builder()
