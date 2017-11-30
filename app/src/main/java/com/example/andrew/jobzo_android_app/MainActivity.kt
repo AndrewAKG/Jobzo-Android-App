@@ -4,32 +4,42 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
+import com.example.andrew.jobzo_android_app.models.Author
+import com.example.andrew.jobzo_android_app.models.Message
 import com.google.gson.Gson
+import com.stfalcon.chatkit.messages.MessagesListAdapter
+import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private val CONTENT_TYPE = MediaType.parse("application/json; charset=utf-8")
     private val client = OkHttpClient()
     private var prefs: SharedPreferences? = null
     private var userMessage: EditText? = null
-    private var serverMsg: TextView? = null
+    private val adapter = MessagesListAdapter<Message>("1", null)
+    private val user = Author()
+    private val userMsg = Message()
+    private val server = Author()
+    private val serverMsg = Message()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = this.getSharedPreferences("tokens", MODE_PRIVATE)
         setContentView(R.layout.activity_main)
-        val send= findViewById<ImageButton>(R.id.send)
-        userMessage = findViewById<EditText>(R.id.TextMessage)
-        serverMsg = findViewById<TextView>(R.id.serverMessage) as TextView
+        val send= findViewById(R.id.send)
+        userMessage = findViewById(R.id.TextMessage) as EditText
+        user.id = "1"
+        userMsg.author = user
+        server.id = "2"
+        serverMsg.author = server
+        messagesList.setAdapter(adapter)
 
         send.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat") }
-
-       welcomeUser("https://radiant-basin-93715.herokuapp.com/welcome")
+        welcomeUser("https://radiant-basin-93715.herokuapp.com/welcome")
     }
 
     /*
@@ -50,10 +60,9 @@ class MainActivity : AppCompatActivity() {
                 val responseBody = response.body()?.string()
                 val body = JSONObject(responseBody)
                 val respMessage = body.getString("message")
-                runOnUiThread {
-                    serverMsg?.text = respMessage
-                }
-                println(body.get("uuid"))
+                val now = Date()
+                serverMsg.text = respMessage
+                serverMsg.createdAt = now
 
                 // saving user id in local storage
                 val prefsEditor = prefs!!.edit()
@@ -61,6 +70,10 @@ class MainActivity : AppCompatActivity() {
                 val json = gson.toJson(body.get("uuid"))
                 prefsEditor.putString("token", json)
                 prefsEditor.commit()
+
+                runOnUiThread {
+                    adapter.addToStart(serverMsg, true);
+                }
             }
         })
     }
@@ -78,6 +91,12 @@ class MainActivity : AppCompatActivity() {
         // getting user message
         val messageText = userMessage?.text.toString()
         println(messageText)
+        val now = Date()
+        userMsg.text = messageText
+        userMsg.createdAt = now
+        runOnUiThread {
+            adapter.addToStart(userMsg, true);
+        }
 
         // building request body
         val body: HashMap<String, String> = hashMapOf("message" to "")
@@ -100,8 +119,12 @@ class MainActivity : AppCompatActivity() {
                if(body.has("message")){
                    println(body.getString("message"))
                    val respMessage = body.getString("message")
+                   val server = Author()
+                   val now = Date()
+                   serverMsg.text = respMessage
+                   serverMsg.createdAt = now
                    runOnUiThread {
-                       serverMsg?.text = respMessage
+                       adapter.addToStart(serverMsg, true);
                    }
                }else{
                    println(body)
