@@ -14,6 +14,9 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.util.*
+import android.graphics.drawable.ColorDrawable
+
+
 
 class MainActivity : AppCompatActivity() {
     private val content = MediaType.parse("application/json; charset=utf-8")
@@ -31,12 +34,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         userInput = findViewById(R.id.input) as MessageInput
         messagesList.setAdapter(adapter)
-
         val coursesMsg= findViewById(R.id.courses)
         val jobsMsg= findViewById(R.id.jobs)
         val degreesMsg= findViewById(R.id.degrees)
-
-
         userInput!!.setInputListener(MessageInput.InputListener {
             sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 0)
             true
