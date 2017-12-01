@@ -24,32 +24,37 @@
         android:id="@+id/linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
 
         <ImageButton
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="30dp"
             android:layout_weight="1"
             android:id="@+id/jobs"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_centerHorizontal="true"
             android:background="@drawable/jobs"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"/>
 
         <ImageButton
+            android:layout_marginHorizontal="30dp"
             android:layout_weight="1"
             android:id="@+id/courses"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@drawable/courses"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"/>
 
         <ImageButton
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="40dp"
             android:layout_weight="1"
             android:id="@+id/degrees"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@drawable/degrees"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"/>
 
     </LinearLayout>
 
