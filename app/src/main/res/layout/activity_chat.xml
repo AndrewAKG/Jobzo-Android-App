@@ -7,19 +7,20 @@
     android:layout_height="match_parent"
     tools:context="com.example.andrew.jobzo_android_app.ChatActivity">
 
-        <com.stfalcon.chatkit.messages.MessagesList
-            android:id="@+id/messagesList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/input" />
+    <com.stfalcon.chatkit.messages.MessagesList
+        android:id="@+id/messagesList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/input"
+        app:textAutoLink="web"/>
 
 
-            <com.stfalcon.chatkit.messages.MessageInput
-                android:id="@+id/input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/linear"
-                app:inputHint="Type your message here..." />
+    <com.stfalcon.chatkit.messages.MessageInput
+        android:id="@+id/input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linear"
+        app:inputHint="Type your message here..." />
 
     <LinearLayout
         android:id="@+id/linear"

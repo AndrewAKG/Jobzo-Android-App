@@ -1,6 +1,5 @@
 package com.example.andrew.jobzo_android_app
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -13,26 +12,11 @@ import com.stfalcon.chatkit.messages.MessageInput
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import kotlinx.android.synthetic.main.activity_chat.*
 import okhttp3.*
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.util.*
-import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
-import android.content.Context.INPUT_METHOD_SERVICE
-import android.net.Uri
-import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
-import org.json.JSONArray
-import android.text.method.LinkMovementMethod
-import android.text.Html
-import com.example.andrew.jobzo_android_app.R.id.textView
-
-
-
-
-
-
-
 
 class ChatActivity : AppCompatActivity() {
     private val content = MediaType.parse("application/json; charset=utf-8")
@@ -47,9 +31,11 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle("Jobzo")
         setContentView(R.layout.activity_chat)
-
+        val actionBar = supportActionBar
+        actionBar!!.setHomeButtonEnabled(true)
+        actionBar!!.setTitle("Jobzo")
+        actionBar.show()
         // creating preferences file
         prefs = this.getSharedPreferences("tokens", MODE_PRIVATE)
 
