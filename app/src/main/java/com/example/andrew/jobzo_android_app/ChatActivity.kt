@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity
 import com.example.andrew.jobzo_android_app.models.Author
 import com.example.andrew.jobzo_android_app.models.Message
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
+import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageInput
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import kotlinx.android.synthetic.main.activity_chat.*
@@ -15,29 +17,41 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.*
 
-
 class ChatActivity : AppCompatActivity() {
     private val content = MediaType.parse("application/json; charset=utf-8")
     private val client = OkHttpClient()
     private var prefs: SharedPreferences? = null
     private var userInput: MessageInput? = null
     private var messageText: String? = null
-    private val adapter = MessagesListAdapter<Message>("1", null)
     private val user = Author("1")
     private val server = Author("2")
-
+    private var imageLoader: ImageLoader? = null
+    private var adapter: MessagesListAdapter<Message>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle("Jobzo")
         setContentView(R.layout.activity_chat)
+
+        // creating preferences file
         prefs = this.getSharedPreferences("tokens", MODE_PRIVATE)
+
+        // getting user inputView
         userInput = findViewById(R.id.input) as MessageInput
+
+        // initializing the image loader
+        imageLoader = ImageLoader { imageView, url -> Picasso.with(applicationContext).load(url).into(imageView) }
+
+        // setting the adapter for the message list
+        adapter = MessagesListAdapter<Message>("1", imageLoader)
         messagesList.setAdapter(adapter)
+
+        // getting image buttons views
         val coursesMsg= findViewById(R.id.courses)
         val jobsMsg= findViewById(R.id.jobs)
         val degreesMsg= findViewById(R.id.degrees)
 
+        // setting listeners
         userInput!!.setInputListener(MessageInput.InputListener {
             sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 0)
             true
@@ -69,7 +83,7 @@ class ChatActivity : AppCompatActivity() {
                 val body = JSONObject(responseBody)
                 val respMessage = body.getString("message")
 
-                // saving user id in local storage
+                // saving user id in shared preferences
                 val prefsEditor = prefs!!.edit()
                 val gson = Gson()
                 val json = gson.toJson(body.get("uuid"))
@@ -77,7 +91,7 @@ class ChatActivity : AppCompatActivity() {
                 prefsEditor.commit()
 
                 runOnUiThread {
-                    adapter.addToStart(Message(respMessage, "1", server), true);
+                    adapter!!.addToStart(Message(respMessage, "1", server, null), true);
                 }
             } catch (e: JSONException){
                 println("JSON ERROR")
@@ -98,19 +112,19 @@ class ChatActivity : AppCompatActivity() {
         when(type){
             0 -> {
                 messageText = userInput!!.inputEditText.text.toString()
-                adapter.addToStart(Message(messageText!!, "1", user), true);
+                adapter!!.addToStart(Message(messageText!!, "1", user, null), true);
             }
             1 -> {
                 messageText = "jobs"
-                adapter.addToStart(Message("jobs", "1", user), true);
+                adapter!!.addToStart(Message("jobs", "1", user, null), true);
             }
             2 -> {
                 messageText = "courses"
-                adapter.addToStart(Message("courses", "1", user), true);
+                adapter!!.addToStart(Message("courses", "1", user, null), true);
             }
             3 -> {
                 messageText = "degrees"
-                adapter.addToStart(Message("degrees", "1", user), true);
+                adapter!!.addToStart(Message("degrees", "1", user, null), true);
             }
         }
 
@@ -136,7 +150,7 @@ class ChatActivity : AppCompatActivity() {
                     println(body.getString("message"))
                     val respMessage = body.getString("message")
                     runOnUiThread {
-                        adapter.addToStart(Message(respMessage, "1", server), true);
+                        adapter!!.addToStart(Message(respMessage, "1", server, null), true);
                     }
                 } else {
                     println(body)
