@@ -157,12 +157,21 @@ class ChatActivity : AppCompatActivity() {
                     }
                 } else {
                            runOnUiThread {
-                               var result : JSONArray?=null
-                               result=body.getJSONArray("items")
-                               var link :String?=null
+                               var result : JSONArray = body.getJSONArray("items")
+                               var link :String
+                               var pagemap: JSONObject
+                               var images : JSONArray
+                               var url: String
                                println(result)
                                var i=0
                                while(i<(result.length())) {
+                                   pagemap = result.getJSONObject(i).getJSONObject("pagemap")
+                                   images = pagemap.getJSONArray("cse_image")
+                                   if(images.length() > 0) {
+                                       url = images.getJSONObject(0).getString("src")
+                                       adapter!!.addToStart(Message("", "1", server, url), true);
+                                   }
+
                                    link = result.getJSONObject(i).getString("link")
                                    adapter!!.addToStart(Message(link.toString(), "1", server, null), true);
                                    i++
