@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,98 +7,50 @@
     android:layout_height="match_parent"
     tools:context="com.example.andrew.jobzo_android_app.ChatActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="1dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="1dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
         <com.stfalcon.chatkit.messages.MessagesList
             android:id="@+id/messagesList"
             android:layout_width="match_parent"
-            android:layout_height="390dp"
+            android:layout_height="match_parent"
             android:layout_above="@+id/input" />
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
             <com.stfalcon.chatkit.messages.MessageInput
                 android:id="@+id/input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="1dp"
-                android:layout_marginEnd="1dp"
-                android:layout_marginStart="1dp"
-                app:inputHint="Type your message here..."
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_above="@+id/linear"
+                app:inputHint="Type your message here..." />
 
-        </android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="49dp">
+        <ImageButton
+            android:layout_weight="1"
+            android:id="@+id/jobs"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/jobs"
+            android:scaleType="fitCenter" />
 
-            <ImageButton
-                android:id="@+id/jobs"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginBottom="1dp"
-                android:layout_marginEnd="2dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="1dp"
-                android:background="@drawable/jobs"
-                android:scaleType="fitCenter"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/courses"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-            <!--app:srcCompat="@android:drawable/btn_star_big_on" />-->
+        <ImageButton
+            android:layout_weight="1"
+            android:id="@+id/courses"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/courses"
+            android:scaleType="fitCenter" />
 
-            <ImageButton
-                android:id="@+id/courses"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginBottom="1dp"
-                android:layout_marginEnd="2dp"
-                android:layout_marginStart="2dp"
-                android:layout_marginTop="1dp"
-                android:background="@drawable/courses"
-                android:scaleType="fitCenter"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/degrees"
-                app:layout_constraintStart_toEndOf="@+id/jobs"
-                app:layout_constraintTop_toTopOf="parent" />
+        <ImageButton
+            android:layout_weight="1"
+            android:id="@+id/degrees"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/degrees"
+            android:scaleType="fitCenter" />
 
-            <!--app:srcCompat="@android:drawable/ic_input_add" -->
-
-            <ImageButton
-                android:id="@+id/degrees"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginBottom="1dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginStart="2dp"
-                android:layout_marginTop="1dp"
-                android:background="@drawable/degrees"
-                android:scaleType="fitCenter"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/courses"
-                app:layout_constraintTop_toTopOf="parent" />
-            <!--app:srcCompat="@android:drawable/ic_delete" />-->
-        </android.support.constraint.ConstraintLayout>
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
