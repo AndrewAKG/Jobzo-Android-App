@@ -16,7 +16,10 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         },SPLASH_TIME_OUT.toLong())
-        setContentView(R.layout.activity_main)
+        val actionBar = supportActionBar
+        actionBar!!.setHomeButtonEnabled(true)
+        actionBar.hide()
 
+        setContentView(R.layout.activity_main)
     }
 }
