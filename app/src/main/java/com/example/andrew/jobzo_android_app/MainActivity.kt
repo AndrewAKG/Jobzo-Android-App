@@ -1,9 +1,9 @@
 package com.example.andrew.jobzo_android_app
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     private val SPLASH_TIME_OUT = 4000
