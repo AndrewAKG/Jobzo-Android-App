@@ -23,7 +23,9 @@
             android:id="@+id/messagesList"
             android:layout_width="match_parent"
             android:layout_height="390dp"
-            android:layout_above="@+id/input" />
+            android:layout_above="@+id/input"
+            textAutoLink="web"
+            />
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"

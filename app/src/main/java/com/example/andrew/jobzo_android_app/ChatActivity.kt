@@ -1,5 +1,6 @@
 package com.example.andrew.jobzo_android_app
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -16,6 +17,19 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.util.*
+import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
+import android.content.Context.INPUT_METHOD_SERVICE
+import android.net.Uri
+import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
+import org.json.JSONArray
+import android.text.method.LinkMovementMethod
+import android.text.Html
+
+
+
+
+
 
 class ChatActivity : AppCompatActivity() {
     private val content = MediaType.parse("application/json; charset=utf-8")
@@ -153,7 +167,28 @@ class ChatActivity : AppCompatActivity() {
                         adapter!!.addToStart(Message(respMessage, "1", server, null), true);
                     }
                 } else {
-                    println(body)
+
+                    var result : JSONArray?=null
+                    result=body.getJSONArray("items")
+                    var link :String?=null
+                    println(result)
+                    var i=0
+                    while(i<(result.length())){
+                         link = result.getJSONObject(i).getString("link")
+                        Uri.parse(link)
+                        println(link)
+                           runOnUiThread {
+                            adapter!!.addToStart(Message( Uri.parse(link).toString(), "1", server, null), true);
+                        }
+//                        val textView = findViewById(R.id.messagesList) as TextView
+//                        textView.isClickable = true
+//                        textView.movementMethod = LinkMovementMethod.getInstance()
+//                        val text = "<a href='link'> Google </a>"
+//                        textView.text = Html.fromHtml(text)
+                        i++
+                    }
+
+
                 }
             } catch (e: JSONException){
                 println("ERROR")
