@@ -1,5 +1,6 @@
 package com.example.andrew.jobzo_android_app
 
+import android.app.ActionBar
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
@@ -21,6 +22,16 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.util.*
+import android.widget.PopupWindow
+import android.widget.RelativeLayout
+import android.app.Activity
+import android.widget.Button
+import android.widget.ImageButton
+import android.support.v4.view.ViewCompat.setElevation
+import android.os.Build
+import android.view.LayoutInflater
+import android.view.View
+
 
 class ChatActivity : AppCompatActivity() {
     private val content = MediaType.parse("application/json; charset=utf-8")
@@ -33,6 +44,14 @@ class ChatActivity : AppCompatActivity() {
     private var imageLoader: ImageLoader? = null
     private var adapter: MessagesListAdapter<Message>? = null
     lateinit var toast: Toast
+    private var mContext: Context? = null
+    private var mActivity: Activity? = null
+
+    private var mRelativeLayout: RelativeLayout? = null
+    private var mButton: ImageButton? = null
+
+    private var mPopupWindow: PopupWindow? = null
+
 
     // showing toast message to user
     private fun showToast(text: String, length: Int){
@@ -53,6 +72,48 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
+        mContext = applicationContext
+
+        // Get the activity
+        mActivity = this@ChatActivity
+
+        // Get the widgets reference from XML layout
+        mRelativeLayout = findViewById(R.id.rlll) as RelativeLayout
+        mButton = findViewById(R.id.courses) as ImageButton
+
+        // Set a click listener for the text view
+        mButton!!.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(view: View) {
+                // Initialize a new instance of LayoutInflater service
+                val inflater = mContext!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+                // Inflate the custom layout/view
+                val customView = inflater.inflate(R.layout.custom_layout, null)
+                mPopupWindow = PopupWindow(
+                        customView,
+                        ActionBar.LayoutParams.WRAP_CONTENT,
+                        ActionBar.LayoutParams.WRAP_CONTENT
+                )
+
+                // Set an elevation value for popup window
+                // Call requires API level 21
+                if (Build.VERSION.SDK_INT >= 21) {
+                    mPopupWindow!!.setElevation(5.0f)
+                }
+
+                // Get a reference for the custom view close button
+                val closeButton = customView.findViewById<ImageButton>(R.id.ib_close) as ImageButton
+
+                // Set a click listener for the popup window close button
+                closeButton.setOnClickListener(object : View.OnClickListener{
+                    override fun onClick(view: View) {
+                        // Dismiss the popup window
+                        mPopupWindow!!.dismiss()
+                    }
+                })
+                mPopupWindow!!.showAtLocation(mRelativeLayout, Gravity.CENTER, 0, 0)
+            }
+        })
         // setting the title of the chat activity
         val actionBar = supportActionBar
         actionBar!!.title = "Jobzo"
@@ -72,7 +133,7 @@ class ChatActivity : AppCompatActivity() {
         messagesList.setAdapter(adapter)
 
         // getting image buttons views
-        val coursesMsg= findViewById(R.id.courses)
+      //  val coursesMsg= findViewById(R.id.courses)
         val jobsMsg= findViewById(R.id.jobs)
         val degreesMsg= findViewById(R.id.degrees)
 
@@ -82,7 +143,7 @@ class ChatActivity : AppCompatActivity() {
             true
         })
         jobsMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 1) }
-        coursesMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2) }
+      //  coursesMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2) }
         degreesMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 3) }
 
         // initializing the chat
