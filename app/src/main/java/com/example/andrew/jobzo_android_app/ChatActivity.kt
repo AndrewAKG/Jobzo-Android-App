@@ -48,6 +48,7 @@ class ChatActivity : AppCompatActivity() {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
+    // creating activity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
@@ -105,6 +106,7 @@ class ChatActivity : AppCompatActivity() {
                 println("Failed")
             }
             override fun onResponse(call: Call, response: Response) = try {
+                toast.cancel()
                 val responseBody = response.body()?.string()
                 val body = JSONObject(responseBody)
                 val respMessage = body.getString("message")
@@ -117,7 +119,6 @@ class ChatActivity : AppCompatActivity() {
                 prefsEditor.commit()
 
                 runOnUiThread {
-                    toast.cancel()
                     adapter!!.addToStart(Message(respMessage, "1", server, null), true)
                 }
             } catch (e: JSONException){
@@ -181,10 +182,11 @@ class ChatActivity : AppCompatActivity() {
                 .post(RequestBody.create(content, JSONObject(body).toString()))
                 .build()
 
+        // checking connectivity
         if (!isNetworkAvailable()) {
             showToast("please check your internet connection and try again", Toast.LENGTH_LONG)
         } else {
-            showToast("loading your search results...", 10)
+            showToast("Typing...", 10)
             // sending request
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
@@ -222,15 +224,16 @@ class ChatActivity : AppCompatActivity() {
                                 } catch (e: JSONException) {
                                     println("NULL")
                                 }
+                                
                                 if (images != null) {
                                     url = images.getJSONObject(0).getString("src")
-                                    adapter!!.addToStart(Message("Image", "1", server, url), true)
+                                    adapter!!.addToStart(Message("Image", "1", server, url), false)
                                 }
 
                                 title = result.getJSONObject(i).getString("title")
                                 link = result.getJSONObject(i).getString("link")
                                 var message = title + '\n' + link
-                                adapter!!.addToStart(Message(message, "1", server, null), true)
+                                adapter!!.addToStart(Message(message, "1", server, null), false)
                                 i++
                             }
                         }
