@@ -1,6 +1,8 @@
 package com.example.andrew.jobzo_android_app
 
+import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
@@ -32,10 +34,18 @@ class ChatActivity : AppCompatActivity() {
     private var adapter: MessagesListAdapter<Message>? = null
     lateinit var toast: Toast
 
+    // showing toast message to user
     private fun showToast(text: String, length: Int){
         toast = Toast.makeText(applicationContext, text, length)
         toast.setGravity(Gravity.BOTTOM, 0, 50)
         toast.show()
+    }
+
+    // checking internet connection
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -134,14 +144,14 @@ class ChatActivity : AppCompatActivity() {
     @param: url of chat backend
     - makes the user send his message and gets the server response
      */
-    private fun sendMessage(url: String, type: Int){
+    private fun sendMessage(url: String, type: Int) {
         // getting user id from shared preferences
         val gson = Gson()
         val json2 = prefs!!.getString("token", "")
         val userSession = gson.fromJson<String>(json2, String::class.java)
 
         // switching image buttons cases with the usual chat
-        when(type){
+        when (type) {
             0 -> {
                 messageText = userInput!!.inputEditText.text.toString()
                 adapter!!.addToStart(Message(messageText!!, "1", user, null), true)
@@ -167,63 +177,68 @@ class ChatActivity : AppCompatActivity() {
         // building request
         val request = Request.Builder()
                 .url(url)
-                .addHeader("Authorization",userSession)
+                .addHeader("Authorization", userSession)
                 .post(RequestBody.create(content, JSONObject(body).toString()))
                 .build()
 
-        showToast("loading your search results...", 10)
-        // sending request
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                println("Failed")
-            }
-            override fun onResponse(call: Call, response: Response) = try {
-                toast.cancel()
-                val responseBody = response.body()?.string()
-                val body = JSONObject(responseBody)
-                if (body.has("message")) {
-                    val respMessage = body.getString("message")
-                    runOnUiThread {
-                        adapter!!.addToStart(Message(respMessage, "1", server, null), true)
-                    }
-                } else {
-                        runOnUiThread {
-                               // getting the items response array
-                               var items : JSONArray = body.getJSONArray("items")
-                               var link :String
-                               var title: String
-                               var pagemap: JSONObject
-                               var images : JSONArray? = null
-                               var url: String
-
-                               // shuffling result
-                               val result = shuffleJsonArray(items)
-
-                               // responding to user with the required search results
-                               var i=0
-                               while(i<(result.length())) {
-                                   pagemap = result.getJSONObject(i).getJSONObject("pagemap")
-                                   try {
-                                       images = pagemap!!.getJSONArray("cse_image")
-                                   } catch (e: JSONException){
-                                       println("NULL")
-                                   }
-                                   if (images != null) {
-                                       url = images.getJSONObject(0).getString("src")
-                                       adapter!!.addToStart(Message("Image", "1", server, url), true)
-                                   }
-
-                                   title = result.getJSONObject(i).getString("title")
-                                   link = result.getJSONObject(i).getString("link")
-                                   var message = title + '\n' + link
-                                   adapter!!.addToStart(Message(message, "1", server, null), true)
-                                   i++
-                               }
-                        }
+        if (!isNetworkAvailable()) {
+            showToast("please check your internet connection and try again", Toast.LENGTH_LONG)
+        } else {
+            showToast("loading your search results...", 10)
+            // sending request
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    println("Failed")
                 }
-            } catch (e: JSONException){
-                println(e)
-            }
-        })
+
+                override fun onResponse(call: Call, response: Response) = try {
+                    toast.cancel()
+                    val responseBody = response.body()?.string()
+                    val body = JSONObject(responseBody)
+                    if (body.has("message")) {
+                        val respMessage = body.getString("message")
+                        runOnUiThread {
+                            adapter!!.addToStart(Message(respMessage, "1", server, null), true)
+                        }
+                    } else {
+                        runOnUiThread {
+                            // getting the items response array
+                            var items: JSONArray = body.getJSONArray("items")
+                            var link: String
+                            var title: String
+                            var pagemap: JSONObject
+                            var images: JSONArray? = null
+                            var url: String
+
+                            // shuffling result
+                            val result = shuffleJsonArray(items)
+
+                            // responding to user with the required search results
+                            var i = 0
+                            while (i < (result.length())) {
+                                pagemap = result.getJSONObject(i).getJSONObject("pagemap")
+                                try {
+                                    images = pagemap!!.getJSONArray("cse_image")
+                                } catch (e: JSONException) {
+                                    println("NULL")
+                                }
+                                if (images != null) {
+                                    url = images.getJSONObject(0).getString("src")
+                                    adapter!!.addToStart(Message("Image", "1", server, url), true)
+                                }
+
+                                title = result.getJSONObject(i).getString("title")
+                                link = result.getJSONObject(i).getString("link")
+                                var message = title + '\n' + link
+                                adapter!!.addToStart(Message(message, "1", server, null), true)
+                                i++
+                            }
+                        }
+                    }
+                } catch (e: JSONException) {
+                    println(e)
+                }
+            })
+        }
     }
 }
