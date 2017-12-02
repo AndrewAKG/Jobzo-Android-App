@@ -285,7 +285,7 @@ class ChatActivity : AppCompatActivity() {
                                 } catch (e: JSONException) {
                                     println("NULL")
                                 }
-                                
+
                                 if (images != null) {
                                     url = images.getJSONObject(0).getString("src")
                                     adapter!!.addToStart(Message("Image", "1", server, url), false)
