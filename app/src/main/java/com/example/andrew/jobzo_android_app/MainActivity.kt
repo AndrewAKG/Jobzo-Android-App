@@ -9,7 +9,6 @@ import android.os.Handler
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 
-
 class MainActivity : AppCompatActivity() {
     private val SPLASH_TIME_OUT = 4000
 
