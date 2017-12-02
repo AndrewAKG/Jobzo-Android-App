@@ -78,8 +78,8 @@ class ChatActivity : AppCompatActivity() {
         mActivity = this@ChatActivity
 
         // Get the widgets reference from XML layout
-        mRelativeLayout = findViewById(R.id.rlll) as RelativeLayout
-        mButton = findViewById(R.id.courses) as ImageButton
+        mRelativeLayout = findViewById(R.id.chat) as RelativeLayout
+        mButton = findViewById(R.id.popupButton) as ImageButton
 
         // Set a click listener for the text view
         mButton!!.setOnClickListener(object : View.OnClickListener {
@@ -102,15 +102,27 @@ class ChatActivity : AppCompatActivity() {
                 }
 
                 // Get a reference for the custom view close button
-                val closeButton = customView.findViewById<ImageButton>(R.id.ib_close) as ImageButton
+                val courses = customView.findViewById<ImageButton>(R.id.courses) as ImageButton
+                val degrees = customView.findViewById<ImageButton>(R.id.degrees) as ImageButton
+                val jobs = customView.findViewById<ImageButton>(R.id.jobs) as ImageButton
 
-                // Set a click listener for the popup window close button
-                closeButton.setOnClickListener(object : View.OnClickListener{
-                    override fun onClick(view: View) {
-                        // Dismiss the popup window
+                // Set a click listener for the popup window jobs button
+                jobs.setOnClickListener({
                         mPopupWindow!!.dismiss()
-                    }
+                        sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 1)
                 })
+
+                // Set a click listener for the popup window courses button
+                courses.setOnClickListener({
+                        mPopupWindow!!.dismiss()
+                     sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2)
+                })
+                // Set a click listener for the popup window degrees button
+                degrees.setOnClickListener({
+                        mPopupWindow!!.dismiss()
+                        sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 3)
+                })
+
                 mPopupWindow!!.showAtLocation(mRelativeLayout, Gravity.CENTER, 0, 0)
             }
         })
@@ -132,20 +144,11 @@ class ChatActivity : AppCompatActivity() {
         adapter = MessagesListAdapter<Message>("1", imageLoader)
         messagesList.setAdapter(adapter)
 
-        // getting image buttons views
-      //  val coursesMsg= findViewById(R.id.courses)
-        val jobsMsg= findViewById(R.id.jobs)
-        val degreesMsg= findViewById(R.id.degrees)
-
         // setting listeners
         userInput!!.setInputListener(MessageInput.InputListener {
             sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 0)
             true
         })
-        jobsMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 1) }
-      //  coursesMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2) }
-        degreesMsg.setOnClickListener { sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 3) }
-
         // initializing the chat
         welcomeUser("https://radiant-basin-93715.herokuapp.com/welcome")
     }
