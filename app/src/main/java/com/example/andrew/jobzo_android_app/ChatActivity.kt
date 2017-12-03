@@ -4,9 +4,14 @@ import android.app.ActionBar
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
+import android.view.LayoutInflater
+import android.widget.ImageButton
+import android.widget.PopupWindow
+import android.widget.RelativeLayout
 import android.widget.Toast
 import com.example.andrew.jobzo_android_app.models.Author
 import com.example.andrew.jobzo_android_app.models.Message
@@ -22,15 +27,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.util.*
-import android.widget.PopupWindow
-import android.widget.RelativeLayout
-import android.app.Activity
-import android.widget.Button
-import android.widget.ImageButton
-import android.support.v4.view.ViewCompat.setElevation
-import android.os.Build
-import android.view.LayoutInflater
-import android.view.View
 
 
 class ChatActivity : AppCompatActivity() {
@@ -44,8 +40,6 @@ class ChatActivity : AppCompatActivity() {
     private var imageLoader: ImageLoader? = null
     private var adapter: MessagesListAdapter<Message>? = null
     lateinit var toast: Toast
-    private var mContext: Context? = null
-    private var mActivity: Activity? = null
 
     private var mRelativeLayout: RelativeLayout? = null
     private var mButton: ImageButton? = null
@@ -72,20 +66,20 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        mContext = applicationContext
-
-        // Get the activity
-        mActivity = this@ChatActivity
+        // setting the title of the chat activity
+        val actionBar = supportActionBar
+        actionBar!!.title = "Jobzo"
+        actionBar.show()
 
         // Get the widgets reference from XML layout
         mRelativeLayout = findViewById(R.id.chat) as RelativeLayout
         mButton = findViewById(R.id.popupButton) as ImageButton
 
         // Set a click listener for the text view
-        mButton!!.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(view: View) {
+        mButton!!.setOnClickListener({
+
                 // Initialize a new instance of LayoutInflater service
-                val inflater = mContext!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val inflater = applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
                 // Inflate the custom layout/view
                 val customView = inflater.inflate(R.layout.custom_layout, null)
@@ -101,7 +95,7 @@ class ChatActivity : AppCompatActivity() {
                     mPopupWindow!!.setElevation(5.0f)
                 }
 
-                // Get a reference for the custom view close button
+                // Get a reference for the popup window image buttons
                 val courses = customView.findViewById<ImageButton>(R.id.courses) as ImageButton
                 val degrees = customView.findViewById<ImageButton>(R.id.degrees) as ImageButton
                 val jobs = customView.findViewById<ImageButton>(R.id.jobs) as ImageButton
@@ -115,8 +109,9 @@ class ChatActivity : AppCompatActivity() {
                 // Set a click listener for the popup window courses button
                 courses.setOnClickListener({
                         mPopupWindow!!.dismiss()
-                     sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2)
+                        sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2)
                 })
+
                 // Set a click listener for the popup window degrees button
                 degrees.setOnClickListener({
                         mPopupWindow!!.dismiss()
@@ -124,12 +119,7 @@ class ChatActivity : AppCompatActivity() {
                 })
 
                 mPopupWindow!!.showAtLocation(mRelativeLayout, Gravity.CENTER, 0, 0)
-            }
         })
-        // setting the title of the chat activity
-        val actionBar = supportActionBar
-        actionBar!!.title = "Jobzo"
-        actionBar.show()
 
         // creating preferences file
         prefs = this.getSharedPreferences("tokens", MODE_PRIVATE)
