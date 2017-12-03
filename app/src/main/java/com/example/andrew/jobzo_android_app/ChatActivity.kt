@@ -69,7 +69,6 @@ class ChatActivity : AppCompatActivity() {
         // setting the title of the chat activity
         val actionBar = supportActionBar
         actionBar!!.title = "Jobzo"
-        //actionBar.setBackgroundDrawable(ColorDrawable(R.drawable.gradient_background))
         actionBar.show()
 
         // Get the widgets reference from XML layout

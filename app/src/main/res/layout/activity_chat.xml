@@ -15,15 +15,19 @@
         android:layout_above="@+id/input"
         app:incomingAvatarHeight="36dp"
         app:incomingAvatarWidth="36dp"
-        app:textAutoLink="web" />
-
+        app:incomingDefaultBubbleColor="#eeeeee"
+        app:outcomingDefaultBubbleColor="#7d8995"
+        app:textAutoLink="web"
+        app:incomingTextLinkColor="#0c3c60"/>
 
     <com.stfalcon.chatkit.messages.MessageInput
         android:id="@+id/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/linear"
-        app:inputHint="Type your message here..." />
+        app:inputButtonDefaultIconDisabledColor="@color/white"
+        app:inputHint="Type your message here..."
+        app:inputButtonDefaultBgColor="#0c3c60" />
 
     <LinearLayout
         android:id="@+id/linear"
@@ -32,7 +36,6 @@
         android:layout_alignParentBottom="true"
         android:gravity="center">
 
-
         <ImageButton
             android:id="@+id/popupButton"
             android:layout_width="40dp"
@@ -40,8 +43,6 @@
             android:layout_marginHorizontal="30dp"
             android:background="@drawable/popup"
             android:scaleType="fitCenter" />
-
-
 
     </LinearLayout>
 
