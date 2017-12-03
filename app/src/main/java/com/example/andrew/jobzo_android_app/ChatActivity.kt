@@ -68,6 +68,7 @@ class ChatActivity : AppCompatActivity() {
         // setting the title of the chat activity
         val actionBar = supportActionBar
         actionBar!!.title = "Jobzo"
+        //actionBar.setBackgroundDrawable(ColorDrawable(R.drawable.gradient_background))
         actionBar.show()
 
         // Get the widgets reference from XML layout
@@ -252,67 +253,66 @@ class ChatActivity : AppCompatActivity() {
                     toast.cancel()
                     val responseBody = response.body()?.string()
                     val body = JSONObject(responseBody)
+                            if (body.has("message")) {
+                                val respMessage = body.getString("message")
 
-                    if (body.has("message")) {
-                        val respMessage = body.getString("message")
-
-                        runOnUiThread {
-                            if(response.code() == 400) {
-                                showToast("something went wrong, please try again", 50)
-                            }
-                            else if (response.code() == 401){
-                                showToast("Your session has expired, reloading...", 50)
-                                finish()
-                                startActivity(intent)
-                            }
-                            else {
-                                adapter!!.addToStart(Message(respMessage, "1", server, null), true)
-                            }
-                        }
-                    } else {
-                        runOnUiThread {
-                            // getting the items response array
-                            var items: JSONArray = body.getJSONArray("items")
-                            var link: String
-                            var title: String
-                            var pagemap: JSONObject
-                            var images: JSONArray? = null
-                            var url: String
-
-                            // shuffling result
-                            val result = shuffleJsonArray(items)
-
-                            // responding to user with the required search results
-                            var i = 0
-                            while (i < (result.length())) {
-                                pagemap = result.getJSONObject(i).getJSONObject("pagemap")
-                                try {
-                                    images = pagemap!!.getJSONArray("cse_image")
-                                } catch (e: JSONException) {
-                                    println("NULL")
-                                }
-
-                                if (images != null) {
-                                    url = images.getJSONObject(0).getString("src")
-                                    if (i == 0) {
-                                        adapter!!.addToStart(Message("Image", "1", server, url), true)
-                                    } else {
-                                        adapter!!.addToStart(Message("Image", "1", server, url), false)
+                                runOnUiThread {
+                                    if(response.code() == 400) {
+                                        showToast("something went wrong, please try again", 50)
+                                    }
+                                    else if (response.code() == 401){
+                                        showToast("Your session has expired, reloading...", 50)
+                                        finish()
+                                        startActivity(intent)
+                                    }
+                                    else {
+                                        adapter!!.addToStart(Message(respMessage, "1", server, null), true)
                                     }
                                 }
+                            } else {
+                                runOnUiThread {
+                                    // getting the items response array
+                                    var items: JSONArray = body.getJSONArray("items")
+                                    var link: String
+                                    var title: String
+                                    var pagemap: JSONObject
+                                    var images: JSONArray? = null
+                                    var url: String
 
-                                title = result.getJSONObject(i).getString("title")
-                                link = result.getJSONObject(i).getString("link")
-                                var message = title + '\n' + link
-                                if (i == 0) {
-                                    adapter!!.addToStart(Message(message, "1", server, null), true)
-                                } else {
-                                    adapter!!.addToStart(Message(message, "1", server, null), false)
+                                    // shuffling result
+                                    val result = shuffleJsonArray(items)
+
+                                    // responding to user with the required search results
+                                    var i = 0
+                                    while (i < (result.length())) {
+                                        pagemap = result.getJSONObject(i).getJSONObject("pagemap")
+                                        try {
+                                            images = pagemap!!.getJSONArray("cse_image")
+                                        } catch (e: JSONException) {
+                                            println("NULL")
+                                        }
+
+                                        if (images != null) {
+                                            url = images.getJSONObject(0).getString("src")
+                                            if (i == 0) {
+                                                adapter!!.addToStart(Message("Image", "1", server, url), true)
+                                            } else {
+                                                adapter!!.addToStart(Message("Image", "1", server, url), false)
+                                            }
+                                        }
+
+                                        title = result.getJSONObject(i).getString("title")
+                                        link = result.getJSONObject(i).getString("link")
+                                        var message = title + '\n' + link
+                                        if (i == 0) {
+                                            adapter!!.addToStart(Message(message, "1", server, null), true)
+                                        } else {
+                                            adapter!!.addToStart(Message(message, "1", server, null), false)
+                                        }
+                                        i++
+                                    }
                                 }
-                                i++
                             }
-                        }
-                    }
                 } catch (e: JSONException) {
                     runOnUiThread {
                         showToast(e.message.toString() , Toast.LENGTH_LONG)
