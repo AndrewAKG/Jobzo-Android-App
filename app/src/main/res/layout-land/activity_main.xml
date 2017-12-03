@@ -15,7 +15,7 @@
             android:layout_above="@+id/textView" />
 
         <TextView
-            android:layout_marginVertical="100dp"
+            android:layout_marginVertical="30dp"
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
