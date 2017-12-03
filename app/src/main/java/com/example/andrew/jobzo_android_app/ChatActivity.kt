@@ -65,7 +65,6 @@ class ChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
-
         // setting the title of the chat activity
         val actionBar = supportActionBar
         actionBar!!.title = "Jobzo"
@@ -160,6 +159,7 @@ class ChatActivity : AppCompatActivity() {
                 println("Failed")
             }
             override fun onResponse(call: Call, response: Response) = try {
+
                 toast.cancel()
                 val responseBody = response.body()?.string()
                 val body = JSONObject(responseBody)
