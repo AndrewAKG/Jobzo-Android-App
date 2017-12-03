@@ -77,47 +77,47 @@ class ChatActivity : AppCompatActivity() {
         // Set a click listener for the text view
         mButton!!.setOnClickListener({
 
-                // Initialize a new instance of LayoutInflater service
-                val inflater = applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            // Initialize a new instance of LayoutInflater service
+            val inflater = applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-                // Inflate the custom layout/view
-                val customView = inflater.inflate(R.layout.custom_layout, null)
-                mPopupWindow = PopupWindow(
-                        customView,
-                        ActionBar.LayoutParams.WRAP_CONTENT,
-                        ActionBar.LayoutParams.WRAP_CONTENT
-                )
+            // Inflate the custom layout/view
+            val customView = inflater.inflate(R.layout.custom_layout, null)
+            mPopupWindow = PopupWindow(
+                    customView,
+                    ActionBar.LayoutParams.WRAP_CONTENT,
+                    ActionBar.LayoutParams.WRAP_CONTENT
+            )
 
-                // Set an elevation value for popup window
-                // Call requires API level 21
-                if (Build.VERSION.SDK_INT >= 21) {
-                    mPopupWindow!!.setElevation(5.0f)
-                }
+            // Set an elevation value for popup window
+            // Call requires API level 21
+            if (Build.VERSION.SDK_INT >= 21) {
+                mPopupWindow!!.setElevation(5.0f)
+            }
 
-                // Get a reference for the popup window image buttons
-                val courses = customView.findViewById<ImageButton>(R.id.courses) as ImageButton
-                val degrees = customView.findViewById<ImageButton>(R.id.degrees) as ImageButton
-                val jobs = customView.findViewById<ImageButton>(R.id.jobs) as ImageButton
+            // Get a reference for the popup window image buttons
+            val courses = customView.findViewById<ImageButton>(R.id.courses) as ImageButton
+            val degrees = customView.findViewById<ImageButton>(R.id.degrees) as ImageButton
+            val jobs = customView.findViewById<ImageButton>(R.id.jobs) as ImageButton
 
-                // Set a click listener for the popup window jobs button
-                jobs.setOnClickListener({
-                        mPopupWindow!!.dismiss()
-                        sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 1)
-                })
+            // Set a click listener for the popup window jobs button
+            jobs.setOnClickListener({
+                mPopupWindow!!.dismiss()
+                sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 1)
+            })
 
-                // Set a click listener for the popup window courses button
-                courses.setOnClickListener({
-                        mPopupWindow!!.dismiss()
-                        sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2)
-                })
+            // Set a click listener for the popup window courses button
+            courses.setOnClickListener({
+                mPopupWindow!!.dismiss()
+                sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2)
+            })
 
-                // Set a click listener for the popup window degrees button
-                degrees.setOnClickListener({
-                        mPopupWindow!!.dismiss()
-                        sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 3)
-                })
+            // Set a click listener for the popup window degrees button
+            degrees.setOnClickListener({
+                mPopupWindow!!.dismiss()
+                sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 3)
+            })
 
-                mPopupWindow!!.showAtLocation(mRelativeLayout, Gravity.CENTER, 0, 0)
+            mPopupWindow!!.showAtLocation(mRelativeLayout, Gravity.CENTER, 0, 0)
         })
 
         // creating preferences file
@@ -243,18 +243,31 @@ class ChatActivity : AppCompatActivity() {
             showToast("Typing...", 10)
             // sending request
             client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    println("Failed")
+                override fun onFailure(call: Call, e: IOException){
+                    toast.cancel()
+                    showToast("something went wrong please try again", Toast.LENGTH_LONG)
                 }
 
                 override fun onResponse(call: Call, response: Response) = try {
                     toast.cancel()
                     val responseBody = response.body()?.string()
                     val body = JSONObject(responseBody)
+
                     if (body.has("message")) {
                         val respMessage = body.getString("message")
+
                         runOnUiThread {
-                            adapter!!.addToStart(Message(respMessage, "1", server, null), true)
+                            if(response.code() == 400) {
+                                showToast("something went wrong, please try again", 50)
+                            }
+                            else if (response.code() == 401){
+                                showToast("Your session has expired, reloading...", 50)
+                                finish()
+                                startActivity(intent)
+                            }
+                            else {
+                                adapter!!.addToStart(Message(respMessage, "1", server, null), true)
+                            }
                         }
                     } else {
                         runOnUiThread {
@@ -281,19 +294,30 @@ class ChatActivity : AppCompatActivity() {
 
                                 if (images != null) {
                                     url = images.getJSONObject(0).getString("src")
-                                    adapter!!.addToStart(Message("Image", "1", server, url), false)
+                                    if (i == 0) {
+                                        adapter!!.addToStart(Message("Image", "1", server, url), true)
+                                    } else {
+                                        adapter!!.addToStart(Message("Image", "1", server, url), false)
+                                    }
                                 }
 
                                 title = result.getJSONObject(i).getString("title")
                                 link = result.getJSONObject(i).getString("link")
                                 var message = title + '\n' + link
-                                adapter!!.addToStart(Message(message, "1", server, null), false)
+                                if (i == 0) {
+                                    adapter!!.addToStart(Message(message, "1", server, null), true)
+                                } else {
+                                    adapter!!.addToStart(Message(message, "1", server, null), false)
+                                }
                                 i++
                             }
                         }
                     }
                 } catch (e: JSONException) {
-                    println(e)
+                    runOnUiThread {
+                        showToast(e.message.toString() , Toast.LENGTH_LONG)
+                    }
+                    println(e.message)
                 }
             })
         }
