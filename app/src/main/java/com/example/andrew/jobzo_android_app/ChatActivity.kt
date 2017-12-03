@@ -68,7 +68,8 @@ class ChatActivity : AppCompatActivity() {
 
         // setting the title of the chat activity
         val actionBar = supportActionBar
-        actionBar!!.title = "Jobzo"
+        actionBar!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM)
+        actionBar!!.setCustomView(R.layout.custom_actionbar)
         actionBar.show()
 
         // Get the widgets reference from XML layout
