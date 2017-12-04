@@ -29,7 +29,7 @@
             android:id="@+id/switchButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/popup"
+            android:background="@drawable/switch_button2"
             android:layout_marginStart="16dp"
             android:contentDescription="@string/more"
             android:scaleType="fitCenter" />
