@@ -12,22 +12,11 @@
         android:id="@+id/messagesList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/input"
-        app:incomingAvatarHeight="36dp"
-        app:incomingAvatarWidth="36dp"
+        android:layout_above="@+id/linear"
         app:incomingDefaultBubbleColor="#eeeeee"
         app:outcomingDefaultBubbleColor="#7d8995"
         app:textAutoLink="web"
         app:incomingTextLinkColor="#0c3c60"/>
-
-    <com.stfalcon.chatkit.messages.MessageInput
-        android:id="@+id/input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/linear"
-        app:inputButtonDefaultIconDisabledColor="@color/white"
-        app:inputHint="Type your message here..."
-        app:inputButtonDefaultBgColor="#0c3c60" />
 
     <LinearLayout
         android:id="@+id/linear"
@@ -37,12 +26,109 @@
         android:gravity="center">
 
         <ImageButton
-            android:id="@+id/popupButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginHorizontal="30dp"
+            android:id="@+id/switchButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="@drawable/popup"
+            android:layout_marginStart="16dp"
+            android:contentDescription="@string/more"
             android:scaleType="fitCenter" />
+
+        <com.stfalcon.chatkit.messages.MessageInput
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:inputButtonDefaultIconDisabledColor="@color/white"
+            app:inputHint="Type your message here..."
+            app:inputButtonDefaultBgColor="#0c3c60" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/jobsView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@+id/linear"
+        android:visibility="gone"
+        >
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/jobs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:backgroundTint="@color/colorPrimary"
+            app:srcCompat="@drawable/jobs" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:text="Jobs"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/coursesView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@+id/jobsView"
+        android:visibility="gone"
+        >
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/courses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:focusable="true"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimary"
+        app:srcCompat="@drawable/courses" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:text="Courses"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/degreesView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_above="@+id/coursesView">
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/degrees"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:focusable="true"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimary"
+        app:srcCompat="@drawable/degrees" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:text="Degrees"/>
 
     </LinearLayout>
 

@@ -4,14 +4,15 @@ import android.app.ActionBar
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
-import android.os.Build
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
-import android.view.LayoutInflater
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageButton
-import android.widget.PopupWindow
-import android.widget.RelativeLayout
+import android.widget.LinearLayout
 import android.widget.Toast
 import com.example.andrew.jobzo_android_app.models.Author
 import com.example.andrew.jobzo_android_app.models.Message
@@ -29,6 +30,8 @@ import java.io.IOException
 import java.util.*
 
 
+
+
 class ChatActivity : AppCompatActivity() {
     private val content = MediaType.parse("application/json; charset=utf-8")
     private val client = OkHttpClient()
@@ -40,11 +43,17 @@ class ChatActivity : AppCompatActivity() {
     private var imageLoader: ImageLoader? = null
     private var adapter: MessagesListAdapter<Message>? = null
     lateinit var toast: Toast
-
-    private var mRelativeLayout: RelativeLayout? = null
-    private var mButton: ImageButton? = null
-
-    private var mPopupWindow: PopupWindow? = null
+    lateinit var switch: ImageButton
+    lateinit var jobs: FloatingActionButton
+    lateinit var courses: FloatingActionButton
+    lateinit var degrees: FloatingActionButton
+    lateinit var jobsLayout: LinearLayout
+    lateinit var coursesLayout: LinearLayout
+    lateinit var degreesLayout: LinearLayout
+    lateinit var showButton:Animation
+    lateinit var hideButton:Animation
+    lateinit var showLayout:Animation
+    lateinit var hideLayout:Animation
 
 
     // showing toast message to user
@@ -61,6 +70,17 @@ class ChatActivity : AppCompatActivity() {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
+    // hiding Animation
+    private fun hideButtons(){
+        jobsLayout.visibility = View.GONE
+        coursesLayout.visibility = View.GONE
+        degreesLayout.visibility = View.GONE
+        jobsLayout.startAnimation(hideLayout)
+        coursesLayout.startAnimation(hideLayout)
+        degreesLayout.startAnimation(hideLayout)
+        switch.startAnimation(hideButton)
+    }
+
     // creating activity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,53 +93,55 @@ class ChatActivity : AppCompatActivity() {
         actionBar.show()
 
         // Get the widgets reference from XML layout
-        mRelativeLayout = findViewById(R.id.chat) as RelativeLayout
-        mButton = findViewById(R.id.popupButton) as ImageButton
+        switch = findViewById(R.id.switchButton) as ImageButton
 
-        // Set a click listener for the text view
-        mButton!!.setOnClickListener({
+        // Get a reference for the floating image buttons
+        jobs = findViewById(R.id.jobs) as FloatingActionButton
+        courses = findViewById(R.id.courses) as FloatingActionButton
+        degrees = findViewById(R.id.degrees) as FloatingActionButton
 
-            // Initialize a new instance of LayoutInflater service
-            val inflater = applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        //Getting floating buttons linear layouts
+        jobsLayout = findViewById(R.id.jobsView) as LinearLayout
+        coursesLayout = findViewById(R.id.coursesView) as LinearLayout
+        degreesLayout = findViewById(R.id.degreesView) as LinearLayout
 
-            // Inflate the custom layout/view
-            val customView = inflater.inflate(R.layout.custom_layout, null)
-            mPopupWindow = PopupWindow(
-                    customView,
-                    ActionBar.LayoutParams.WRAP_CONTENT,
-                    ActionBar.LayoutParams.WRAP_CONTENT
-            )
+        // referencing animations
+        showButton = AnimationUtils.loadAnimation(this@ChatActivity, R.anim.show_button)
+        hideButton = AnimationUtils.loadAnimation(this@ChatActivity, R.anim.hide_button)
+        showLayout = AnimationUtils.loadAnimation(this@ChatActivity, R.anim.show_layout)
+        hideLayout = AnimationUtils.loadAnimation(this@ChatActivity, R.anim.hide_layout)
 
-            // Set an elevation value for popup window
-            // Call requires API level 21
-            if (Build.VERSION.SDK_INT >= 21) {
-                mPopupWindow!!.setElevation(5.0f)
+        switch.setOnClickListener({
+            if(jobsLayout.visibility == View.VISIBLE && coursesLayout.visibility == View.VISIBLE && degreesLayout.visibility == View.VISIBLE){
+                hideButtons()
             }
+            else {
+                jobsLayout.visibility = View.VISIBLE
+                coursesLayout.visibility = View.VISIBLE
+                degreesLayout.visibility = View.VISIBLE
+                jobsLayout.startAnimation(showLayout)
+                coursesLayout.startAnimation(showLayout)
+                degreesLayout.startAnimation(showLayout)
+                switch.startAnimation(showButton)
+            }
+        })
 
-            // Get a reference for the popup window image buttons
-            val courses = customView.findViewById<ImageButton>(R.id.courses) as ImageButton
-            val degrees = customView.findViewById<ImageButton>(R.id.degrees) as ImageButton
-            val jobs = customView.findViewById<ImageButton>(R.id.jobs) as ImageButton
+        // Set a listener for floating jobs button
+        jobs.setOnClickListener ({
+            hideButtons()
+            sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 1)
+        })
 
-            // Set a click listener for the popup window jobs button
-            jobs.setOnClickListener({
-                mPopupWindow!!.dismiss()
-                sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 1)
-            })
+        // Set a listener for floating courses button
+        courses.setOnClickListener ({
+            hideButtons()
+            sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2)
+        })
 
-            // Set a click listener for the popup window courses button
-            courses.setOnClickListener({
-                mPopupWindow!!.dismiss()
-                sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 2)
-            })
-
-            // Set a click listener for the popup window degrees button
-            degrees.setOnClickListener({
-                mPopupWindow!!.dismiss()
-                sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 3)
-            })
-
-            mPopupWindow!!.showAtLocation(mRelativeLayout, Gravity.CENTER, 0, 0)
+        // Set a listener for floating degrees button
+        degrees.setOnClickListener ({
+            hideButtons()
+            sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 3)
         })
 
         // creating preferences file
@@ -140,6 +162,7 @@ class ChatActivity : AppCompatActivity() {
             sendMessage("https://radiant-basin-93715.herokuapp.com/chat", 0)
             true
         })
+
         // initializing the chat
         welcomeUser("https://radiant-basin-93715.herokuapp.com/welcome")
     }
