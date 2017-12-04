@@ -60,16 +60,9 @@
             android:layout_marginStart="10dp"
             android:clickable="true"
             android:focusable="true"
+            android:scaleType="fitCenter"
             app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@drawable/jobs" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            android:text="Jobs"/>
 
     </LinearLayout>
 
@@ -90,16 +83,9 @@
         android:layout_marginBottom="10dp"
         android:focusable="true"
         android:clickable="true"
+        android:scaleType="fitCenter"
         app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@drawable/courses" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_marginLeft="10dp"
-            android:layout_gravity="center_vertical"
-            android:text="Courses"/>
 
     </LinearLayout>
 
@@ -119,16 +105,9 @@
         android:layout_marginBottom="10dp"
         android:focusable="true"
         android:clickable="true"
+        android:scaleType="fitCenter"
         app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@drawable/degrees" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_marginLeft="10dp"
-            android:layout_gravity="center_vertical"
-            android:text="Degrees"/>
 
     </LinearLayout>
 
